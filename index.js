@@ -8,8 +8,6 @@ import MovieRoutes from "./routes/movies.js";
 const app = express();
 const port = 4000;
 
-let genres = {};
-
 app.use(
   cors({
     credentials: true,
@@ -17,14 +15,16 @@ app.use(
   })
 );
 
+GenreRoutes(app);
+MovieRoutes(app);
+
 // Once server starts up, fetch list of genres and store
 // So we don't have to query API every time for genre lookup
 app.listen(port, async () => {
+  let genres = {};
   const response = await instance.get("/genre/movie/list?language=en-US");
   for (const genre of response.data.genres) {
     genres[genre.id] = genre.name;
   }
+  app.set("genres", genres);
 });
-
-GenreRoutes(app, genres);
-MovieRoutes(app);
