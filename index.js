@@ -27,4 +27,6 @@ app.listen(port, async () => {
     genres[genre.id] = genre.name;
   }
   app.locals.genres = genres;
+  console.log("set locals:");
+  console.log(app.locals.genres);
 });
