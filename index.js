@@ -26,5 +26,5 @@ app.listen(port, async () => {
   for (const genre of response.data.genres) {
     genres[genre.id] = genre.name;
   }
-  app.set("genres", genres);
+  app.locals.genres = genres;
 });
