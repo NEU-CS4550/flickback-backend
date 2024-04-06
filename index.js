@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 
 // Once server starts up, fetch list of genres and store
 // So we don't have to query API every time for genre lookup
-export let genres = {};
+//export let genres = {};
 app.listen(port, async () => {
   const response = await instance.get("/genre/movie/list?language=en-US");
   for (const genre of response.data.genres) {
