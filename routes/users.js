@@ -24,6 +24,7 @@ export default function UserRoutes(app) {
     const response = await auth.login(req.body.username, req.body.password);
     if (response.type == "success") {
       res.cookie("token", response.token, auth.cookieSettings);
+      console.log("cookie domain: " + auth.cookieSettings.domain);
       res.sendStatus(200);
     } else {
       res.status(400).json(response.message);
