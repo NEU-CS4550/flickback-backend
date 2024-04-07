@@ -83,7 +83,8 @@ export const authenticate = (token) => {
 };
 
 export const cookieSettings = {
-  domain: new URL(process.env.FRONTEND_URL).hostname,
+  domain:
+    process.env.COOKIE_DOMAIN ?? new URL(process.env.FRONTEND_URL).hostname,
   httpOnly: true,
   secure: true,
   signed: true,
