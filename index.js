@@ -2,8 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import { api } from "./utils/api.js";
-import * as db from "./database/models.js";
+import cookieParser from "cookie-parser";
 import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
@@ -16,10 +15,11 @@ const port = 4000;
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
   })
 );
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 GenreRoutes(app);
 MovieRoutes(app);

@@ -4,6 +4,10 @@ const UserSchema = new mongoose.Schema(
   {
     username: String,
     passwordHash: String,
+    role: {
+      type: String,
+      default: "USER",
+    },
     registered: {
       type: Date,
       default: Date.now(),

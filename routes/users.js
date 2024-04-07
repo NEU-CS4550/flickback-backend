@@ -1,6 +1,5 @@
 import { users } from "../database/models.js";
-import { hash, verify } from "@node-rs/argon2";
-import { error, success } from "../utils/http.js";
+import * as auth from "../utils/auth.js";
 
 export default function UserRoutes(app) {
   // Get list of all users
@@ -9,58 +8,45 @@ export default function UserRoutes(app) {
     res.json(response);
   });
 
-  // Register a new user
-  // password must have:
-  // - 6 characters or more
-  // - a special character
-  // - a number
+  // Register
   app.post("/users/register", async (req, res) => {
-    const user = req.body;
-
-    // check if user exists
-    const exists = await users.findOne({ username: user.username }).count();
-    if (exists > 0) {
-      return error(res, "User already exists.");
+    const response = await auth.register(req.body.username, req.body.password);
+    if (response.type == "success") {
+      res.cookie("token", response.token, auth.cookieSettings);
+      res.sendStatus(200);
+    } else {
+      res.status(400).json(response.message);
     }
-
-    // test password against requirements
-    var special = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-    var number = /\d/;
-    if (
-      user.password.length < 6 ||
-      !special.test(user.password) ||
-      !number.test(user.password)
-    ) {
-      return error(
-        res,
-        "Password must be 6 characters or more and contain a special character and a number."
-      );
-    }
-
-    // hash password and create user
-    await users.create({
-      username: user.username,
-      passwordHash: await hash(user.password),
-    });
-    return success(res);
   });
 
-  // Login existing user
+  // Login
   app.post("/users/login", async (req, res) => {
-    const user = req.body;
+    const response = await auth.login(req.body.username, req.body.password);
+    if (response.type == "success") {
+      res.cookie("token", response.token, auth.cookieSettings);
+      res.sendStatus(200);
+    } else {
+      res.status(400).json(response.message);
+    }
+  });
 
-    // check if user exists
-    const record = await users.findOne({ username: user.username });
-    if (!record) {
-      return error(res, "User does not exist");
+  // Logout
+  app.post("/users/logout", async (req, res) => {
+    res.clearCookie("token");
+    res.sendStatus(200);
+  });
+
+  app.get("/users/profile", async (req, res) => {
+    const token = req.signedCookies.token;
+    if (!token) {
+      return res.status(401).json("Not logged in.");
     }
 
-    // verify password matches
-    const passwordMatch = await verify(record.passwordHash, user.password);
-    if (!passwordMatch) {
-      return error(res, "Incorrect password");
+    const user = await auth.authenticate(req.signedCookies.token);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(401).json("invalid token");
     }
-
-    return success(res);
   });
 }
