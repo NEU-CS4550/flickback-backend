@@ -12,8 +12,9 @@ export default function UserRoutes(app) {
   app.post("/users/register", async (req, res) => {
     const response = await auth.register(req.body.username, req.body.password);
     if (response.type == "success") {
-      res.cookie("token", response.token, auth.cookieSettings);
-      res.sendStatus(200);
+      //res.cookie("token", response.token, auth.cookieSettings);
+      //res.sendStatus(200);
+      res.json(response.token);
     } else {
       res.status(400).json(response.message);
     }
@@ -23,27 +24,21 @@ export default function UserRoutes(app) {
   app.post("/users/login", async (req, res) => {
     const response = await auth.login(req.body.username, req.body.password);
     if (response.type == "success") {
-      res.cookie("token", response.token, auth.cookieSettings);
-      console.log("cookie domain: " + auth.cookieSettings.domain);
-      res.sendStatus(200);
+      //res.cookie("token", response.token, auth.cookieSettings);
+      //res.sendStatus(200);
+      res.json(response.token);
     } else {
       res.status(400).json(response.message);
     }
   });
 
-  // Logout
-  app.post("/users/logout", async (req, res) => {
-    res.clearCookie("token");
-    res.sendStatus(200);
-  });
-
   app.get("/users/profile", async (req, res) => {
-    const token = req.signedCookies.token;
+    const token = req.cookies.token;
     if (!token) {
       return res.json(null);
     }
 
-    const user = await auth.authenticate(req.signedCookies.token);
+    const user = auth.authenticate(token);
     if (user) {
       res.json(user);
     } else {

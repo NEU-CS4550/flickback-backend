@@ -82,11 +82,11 @@ export const authenticate = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-export const cookieSettings = {
+/*export const cookieSettings = {
   domain:
     process.env.COOKIE_DOMAIN ?? new URL(process.env.FRONTEND_URL).hostname,
   httpOnly: true,
   secure: true,
   signed: true,
   maxAge: 86400000, // 1 day
-};
+};*/

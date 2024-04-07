@@ -19,7 +19,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser());
 
 GenreRoutes(app);
 MovieRoutes(app);
