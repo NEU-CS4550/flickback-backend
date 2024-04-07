@@ -1,12 +1,17 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { instance } from "./utils/api.js";
+import mongoose from "mongoose";
+import { api } from "./utils/api.js";
+import * as db from "./database/models.js";
 import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
+import UserRoutes from "./routes/users.js";
 
 const app = express();
 const port = 4000;
+
+mongoose.connect(process.env.MONGODB_URI);
 
 app.use(
   cors({
@@ -17,16 +22,8 @@ app.use(
 
 GenreRoutes(app);
 MovieRoutes(app);
+UserRoutes(app);
 
-// Once server starts up, fetch list of genres and store
-// So we don't have to query API every time for genre lookup
-app.listen(port, async () => {
-  let genres = {};
-  const response = await instance.get("/genre/movie/list?language=en-US");
-  for (const genre of response.data.genres) {
-    genres[genre.id] = genre.name;
-  }
-  app.locals.genres = genres;
-  console.log("set locals:");
-  console.log(app.locals.genres);
-});
+app.listen(port);
+
+export default app;

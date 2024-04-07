@@ -1,7 +1,9 @@
+import { api } from "../utils/api.js";
+
 export default async function GenreRoutes(app, genres) {
   // Popular movies
   app.get("/genres", async (req, res) => {
-    console.log(req.app.locals.genre);
-    res.json(req.app.locals.genres);
+    const response = await api.get("/genre/movie/list?language=en-US");
+    res.json(response.data);
   });
 }
