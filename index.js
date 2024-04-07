@@ -8,10 +8,10 @@ import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
 
+mongoose.connect(process.env.MONGODB_URI);
+
 const app = express();
 const port = 4000;
-
-mongoose.connect(process.env.MONGODB_URI);
 
 app.use(
   cors({
@@ -19,6 +19,7 @@ app.use(
     origin: "http://localhost:3000",
   })
 );
+app.use(express.json());
 
 GenreRoutes(app);
 MovieRoutes(app);
