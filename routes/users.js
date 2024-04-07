@@ -39,14 +39,14 @@ export default function UserRoutes(app) {
   app.get("/users/profile", async (req, res) => {
     const token = req.signedCookies.token;
     if (!token) {
-      return res.status(401).json("Not logged in.");
+      return res.json(null);
     }
 
     const user = await auth.authenticate(req.signedCookies.token);
     if (user) {
       res.json(user);
     } else {
-      res.status(401).json("invalid token");
+      res.status(401).json("Invalid token");
     }
   });
 }
