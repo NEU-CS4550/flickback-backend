@@ -1,5 +1,20 @@
-import { users } from "../database/models.js";
 import * as auth from "../utils/auth.js";
+import { users, follows } from "../database/models.js";
+
+async function getProfile(userId) {
+  const user = await users.findById(userId);
+  const following = await follows.find({ userId });
+  const followers = await follows.find({ follows: userId });
+  return {
+    user,
+    following: following.map((rel) => {
+      return rel.follows;
+    }),
+    followers: followers.map((rel) => {
+      return rel.userId;
+    }),
+  };
+}
 
 export default function UserRoutes(app) {
   // Get list of all users
@@ -8,42 +23,45 @@ export default function UserRoutes(app) {
     res.json(response);
   });
 
-  // Register
-  app.post("/users/register", async (req, res) => {
-    const response = await auth.register(req.body.username, req.body.password);
-    if (response.type == "success") {
-      //res.cookie("token", response.token, auth.cookieSettings);
-      //res.sendStatus(200);
-      res.json(response.token);
-    } else {
-      res.status(400).json(response.message);
-    }
-  });
-
-  // Login
-  app.post("/users/login", async (req, res) => {
-    const response = await auth.login(req.body.username, req.body.password);
-    if (response.type == "success") {
-      //res.cookie("token", response.token, auth.cookieSettings);
-      //res.sendStatus(200);
-      res.json(response.token);
-    } else {
-      res.status(400).json(response.message);
-    }
-  });
-
-  app.get("/users/profile", async (req, res) => {
-    let token = req.headers.authorization;
-    if (!token) {
-      return res.json(null);
-    }
-
-    token = token.substring(7);
-    const user = auth.authenticate(token);
+  app.get("/profile", async (req, res) => {
+    const user = auth.authenticate(req.headers.authorization);
     if (user) {
-      res.json(user);
+      const profile = await getProfile(user.id);
+      res.json(profile);
     } else {
-      res.status(401).json("Invalid token");
+      res.sendStatus(401);
+    }
+  });
+
+  app.get("/users/:profileId/profile", async (req, res) => {
+    const profileId = req.params.profileId;
+    const profile = await getProfile(profileId);
+    res.json(profile);
+  });
+
+  app.post("/users/:profileId/follow", async (req, res) => {
+    const profileId = req.params.profileId;
+    const user = auth.authenticate(req.headers.authorization);
+    if (user) {
+      await follows.findOneAndUpdate(
+        { userId: user.id, follows: profileId },
+        {},
+        { upsert: true }
+      );
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
+    }
+  });
+
+  app.post("/users/:profileId/unfollow", async (req, res) => {
+    const profileId = req.params.profileId;
+    const user = auth.authenticate(req.headers.authorization);
+    if (user) {
+      await follows.findOneAndDelete({ userId: user.id, follows: profileId });
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(401);
     }
   });
 }

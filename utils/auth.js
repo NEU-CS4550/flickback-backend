@@ -36,7 +36,7 @@ export const register = async (username, password, role = "USER") => {
 
   return await {
     type: "success",
-    token: generateToken(record._id, username, role),
+    token: generateToken(record),
   };
 };
 
@@ -61,24 +61,27 @@ export const login = async (username, password) => {
 
   return await {
     type: "success",
-    token: generateToken(record._id, username, record.role),
+    token: generateToken(record),
   };
 };
 
 // Generate JWT token
-const generateToken = (id, username, role) => {
-  return jwt.sign(
-    {
-      id,
-      username,
-      role,
-    },
-    process.env.JWT_SECRET
-  );
+const generateToken = (record) => {
+  let rec = Object.assign({}, record)._doc;
+  delete rec.passwordHash;
+  rec.id = record._id.toString();
+  delete rec._id;
+  delete rec.registered;
+  return jwt.sign(rec, process.env.JWT_SECRET);
 };
 
 // Verify JWT token
 export const authenticate = (token) => {
+  if (!token) {
+    return null;
+  }
+
+  token = token.substring(7);
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 

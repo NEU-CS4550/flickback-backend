@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
+import AuthRoutes from "./routes/auth.js";
+import SearchRoutes from "./routes/search.js";
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -21,9 +23,11 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+AuthRoutes(app);
 GenreRoutes(app);
 MovieRoutes(app);
 UserRoutes(app);
+SearchRoutes(app);
 
 app.listen(port);
 

@@ -12,6 +12,12 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    pfp: {
+      type: String,
+      default: () => {
+        return "/pfps/" + (Math.floor(Math.random() * 4) + 1) + ".png";
+      },
+    },
   },
   {
     versionKey: false,
