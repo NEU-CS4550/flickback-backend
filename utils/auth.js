@@ -7,8 +7,10 @@ import jwt from "jsonwebtoken";
 // - a special character
 // - a number
 export const register = async (username, password, role = "USER") => {
-  const exists = await users.findOne({ username: username }).count();
-  if (exists > 0) {
+  const exists = await users.exists({
+    username: { $regex: username, $options: "i" },
+  });
+  if (exists) {
     return { type: "error", message: "User already exists." };
   }
 
@@ -42,7 +44,9 @@ export const register = async (username, password, role = "USER") => {
 
 export const login = async (username, password) => {
   // check if user exists
-  const record = await users.findOne({ username: username });
+  const record = await users.findOne({
+    username: { $regex: username, $options: "i" },
+  });
   if (!record) {
     return {
       type: "error",

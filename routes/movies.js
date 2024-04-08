@@ -18,4 +18,10 @@ export default function MovieRoutes(app) {
     const response = await api.get("/trending/movie/day?language=en-US");
     res.json(response.data);
   });
+
+  app.get("/movies/:movieId", async (req, res) => {
+    const movieId = req.params.movieId;
+    const response = await api.get(`/movie/${movieId}?language=en-US`);
+    res.json(response.data);
+  });
 }
