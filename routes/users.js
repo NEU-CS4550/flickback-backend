@@ -33,11 +33,12 @@ export default function UserRoutes(app) {
   });
 
   app.get("/users/profile", async (req, res) => {
-    const token = req.cookies.token;
+    let token = req.headers.authorization;
     if (!token) {
       return res.json(null);
     }
 
+    token = token.substring(7);
     const user = auth.authenticate(token);
     if (user) {
       res.json(user);
