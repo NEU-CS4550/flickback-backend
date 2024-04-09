@@ -1,7 +1,8 @@
 import { api } from "../utils/api.js";
 
 export default function SearchRoutes(app) {
-  app.post("/search", async (req, res) => {
+  // Search movies by query string
+  app.post("/actions/search", async (req, res) => {
     const query = req.body.query;
     if (query === "") return res.json([]);
     const response = await api.get(

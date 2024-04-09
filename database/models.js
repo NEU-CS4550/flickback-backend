@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
 import users from "./User.js";
 import follows from "./Follows.js";
+import watchlists from "./Watchlist.js";
 
-export { users, follows };
+export { users, follows, watchlists };

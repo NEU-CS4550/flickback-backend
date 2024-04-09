@@ -24,10 +24,4 @@ export default function AuthRoutes(app) {
       res.status(400).json(response.message);
     }
   });
-
-  // Get session info
-  app.get("/auth/session", async (req, res) => {
-    const user = auth.authenticate(req.headers.authorization);
-    res.json(user);
-  });
 }
