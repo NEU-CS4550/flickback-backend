@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema(
     },
     registered: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
     },
     pfp: {
       type: String,
