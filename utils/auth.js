@@ -4,6 +4,13 @@ import jwt from "jsonwebtoken";
 
 // password must have 6 chars or more
 export const register = async (username, password, role = "USER") => {
+  if (username.length < 3) {
+    return {
+      type: "error",
+      message: "Username must be at least 3 characters.",
+    };
+  }
+
   const exists = await users.exists({
     username: { $regex: `^${username}$`, $options: "i" },
   });

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { follows, ratings, watchlists } from "./models.js";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -23,6 +24,13 @@ const UserSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+UserSchema.pre("remove", (next) => {
+  watchlists.remove({ userId: this._id.toString() }).exec();
+  ratings.remove({ userId: this._id.toString() }).exec();
+  follows.remove({ userId: this._id.toString() }).exec();
+  follows.remove({ follows: this._id.toString() }).exec();
+});
 
 const users = new mongoose.model("User", UserSchema);
 

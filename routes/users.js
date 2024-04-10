@@ -8,7 +8,12 @@ async function getProfile(userId) {
   const followers = await follows.find({ follows: userId });
   const watchlist = await watchlists.find({ userId });
   return {
-    user,
+    user: {
+      id: user._id,
+      username: user.username,
+      role: user.role,
+      pfp: user.pfp,
+    },
     following: following.map((rel) => {
       return rel.follows;
     }),
