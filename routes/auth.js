@@ -3,25 +3,17 @@ import * as auth from "../utils/auth.js";
 export default function AuthRoutes(app) {
   // Register
   app.post("/auth/register", async (req, res) => {
-    const response = await auth.register(req.body.username, req.body.password);
-    if (response.type == "success") {
-      //res.cookie("token", response.token, auth.cookieSettings);
-      //res.sendStatus(200);
-      res.json(response.token);
-    } else {
-      res.status(400).json(response.message);
-    }
+    const response = await auth.register(
+      req.body.username,
+      req.body.password,
+      req.body.role
+    );
+    res.json(response);
   });
 
   // Login
   app.post("/auth/login", async (req, res) => {
     const response = await auth.login(req.body.username, req.body.password);
-    if (response.type == "success") {
-      //res.cookie("token", response.token, auth.cookieSettings);
-      //res.sendStatus(200);
-      res.json(response.token);
-    } else {
-      res.status(400).json(response.message);
-    }
+    res.json(response);
   });
 }

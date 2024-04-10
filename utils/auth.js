@@ -2,30 +2,19 @@ import { users } from "../database/models.js";
 import { hash, verify } from "@node-rs/argon2";
 import jwt from "jsonwebtoken";
 
-// password must have:
-// - 6 characters or more
-// - a special character
-// - a number
+// password must have 6 chars or more
 export const register = async (username, password, role = "USER") => {
   const exists = await users.exists({
-    username: { $regex: username, $options: "i" },
+    username: { $regex: `^${username}$`, $options: "i" },
   });
   if (exists) {
-    return { type: "error", message: "User already exists." };
+    return { type: "error", message: "Username already in use." };
   }
 
-  // test password against requirements
-  var special = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-  var number = /\d/;
-  if (
-    password.length < 6 ||
-    !special.test(password) ||
-    !number.test(password)
-  ) {
+  if (password.length < 6) {
     return {
       type: "error",
-      message:
-        "Password must be 6 characters or more and contain a special character and a number.",
+      message: "Password must be at least 6 characters.",
     };
   }
 
@@ -45,7 +34,7 @@ export const register = async (username, password, role = "USER") => {
 export const login = async (username, password) => {
   // check if user exists
   const record = await users.findOne({
-    username: { $regex: username, $options: "i" },
+    username: { $regex: `^${username}$`, $options: "i" },
   });
   if (!record) {
     return {
@@ -59,7 +48,7 @@ export const login = async (username, password) => {
   if (!passwordMatch) {
     return {
       type: "error",
-      message: "Incorrect password.",
+      message: "Incorrect password. xxxxxxxxxx",
     };
   }
 
