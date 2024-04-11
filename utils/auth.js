@@ -4,10 +4,32 @@ import jwt from "jsonwebtoken";
 
 // password must have 6 chars or more
 export const register = async (username, password, role = "USER") => {
+  username = username.trim();
+  if (username == "" || password == "") {
+    return {
+      type: "error",
+      message: "Username and password required.",
+    };
+  }
+
   if (username.length < 3) {
     return {
       type: "error",
       message: "Username must be at least 3 characters.",
+    };
+  }
+
+  if (password.length < 6) {
+    return {
+      type: "error",
+      message: "Password must be at least 6 characters.",
+    };
+  }
+
+  if (/\s/.test(username) || /\s/.test(password)) {
+    return {
+      type: "error",
+      message: "Username and password cannot contain any whitespace.",
     };
   }
 
@@ -16,13 +38,6 @@ export const register = async (username, password, role = "USER") => {
   });
   if (exists) {
     return { type: "error", message: "Username already in use." };
-  }
-
-  if (password.length < 6) {
-    return {
-      type: "error",
-      message: "Password must be at least 6 characters.",
-    };
   }
 
   // hash password and create user
@@ -39,6 +54,13 @@ export const register = async (username, password, role = "USER") => {
 };
 
 export const login = async (username, password) => {
+  if (username.trim() == "" || password.trim == "") {
+    return {
+      type: "error",
+      message: "Username and password required.",
+    };
+  }
+
   // check if user exists
   const record = await users.findOne({
     username: { $regex: `^${username}$`, $options: "i" },
