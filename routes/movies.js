@@ -5,27 +5,45 @@ import { watchlists, ratings } from "../database/models.js";
 export default function MovieRoutes(app) {
   // List of movies in theaters now
   app.get("/movies/playing", async (req, res) => {
-    const response = await api.get("/movie/now_playing?language=en-US&page=1");
-    res.json(response.data);
+    try {
+      const response = await api.get(
+        "/movie/now_playing?language=en-US&page=1"
+      );
+      res.json(response.data);
+    } catch (e) {
+      res.sendStatus(500);
+    }
   });
 
   // List of most popular movies
   app.get("/movies/popular", async (req, res) => {
-    const response = await api.get("/movie/popular?language=en-US&page=1");
-    res.json(response.data);
+    try {
+      const response = await api.get("/movie/popular?language=en-US&page=1");
+      res.json(response.data);
+    } catch (e) {
+      res.sendStatus(500);
+    }
   });
 
   // List of movies trending today
   app.get("/movies/trending", async (req, res) => {
-    const response = await api.get("/trending/movie/day?language=en-US");
-    res.json(response.data);
+    try {
+      const response = await api.get("/trending/movie/day?language=en-US");
+      res.json(response.data);
+    } catch (e) {
+      res.sendStatus(500);
+    }
   });
 
   // Get movie by ID
   app.get("/movies/:movieId", async (req, res) => {
-    const movieId = req.params.movieId;
-    const response = await api.get(`/movie/${movieId}?language=en-US`);
-    res.json(response.data);
+    try {
+      const movieId = req.params.movieId;
+      const response = await api.get(`/movie/${movieId}?language=en-US`);
+      res.json(response.data);
+    } catch (e) {
+      res.sendStatus(500);
+    }
   });
 
   // Add movie to watchlist
@@ -78,6 +96,7 @@ export default function MovieRoutes(app) {
         },
         { upsert: true }
       );
+      console.log(req.body);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
@@ -85,7 +104,7 @@ export default function MovieRoutes(app) {
   });
 
   // Delete a movie rating
-  app.post("/movies/:movieId/rate", async (req, res) => {
+  app.delete("/movies/:movieId/rate", async (req, res) => {
     const movieId = req.params.movieId;
     const user = auth.authenticate(req.headers.authorization);
     if (user) {
