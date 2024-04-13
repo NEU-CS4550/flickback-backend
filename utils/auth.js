@@ -1,5 +1,4 @@
-import { users, follows, watchlists } from "../database/models.js";
-import { api } from "../utils/api.js";
+import { users } from "../database/models.js";
 import { hash, verify } from "@node-rs/argon2";
 import jwt from "jsonwebtoken";
 
@@ -107,38 +106,6 @@ export const authenticate = (token) => {
   token = token.substring(7);
   return jwt.verify(token, process.env.JWT_SECRET);
 };
-
-// Helper function to get a full user profile
-export async function getProfile(userId) {
-  const user = await users.findById(userId);
-  const following = await follows.find({ userId });
-  const followers = await follows.find({ follows: userId });
-  const watchlist = await watchlists.find({ userId });
-  return {
-    user: {
-      id: user._id,
-      username: user.username,
-      role: user.role,
-      pfp: user.pfp,
-    },
-    following: following.map((rel) => {
-      return rel.follows;
-    }),
-    followers: followers.map((rel) => {
-      return rel.userId;
-    }),
-    watchlist: await Promise.all(
-      watchlist.map(async (rel) => {
-        const movie = await api.get(`/movie/${rel.movieId}?language=en-US`);
-        return {
-          id: movie.data.id,
-          title: movie.data.title,
-          poster_path: movie.data.poster_path,
-        };
-      })
-    ),
-  };
-}
 
 /*export const cookieSettings = {
   domain:

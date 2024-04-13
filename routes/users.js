@@ -1,5 +1,5 @@
 import * as auth from "../utils/auth.js";
-import { users, follows } from "../database/models.js";
+import { users, follows, ratings, watchlists } from "../database/models.js";
 
 export default function UserRoutes(app) {
   // Get list of all users
@@ -8,13 +8,17 @@ export default function UserRoutes(app) {
     res.json(response);
   });
 
-  // Get profile of current user
-  app.get("/profile", async (req, res) => {
+  // Get current user
+  app.get("/user", async (req, res) => {
     const user = auth.authenticate(req.headers.authorization);
     if (user) {
       try {
-        const profile = await auth.getProfile(user.id);
-        res.json(profile);
+        let userInfo = await users.findOne({ _id: user.id });
+        res.json({
+          id: userInfo._id,
+          username: userInfo.username,
+          pfp: userInfo.pfp,
+        });
       } catch (e) {
         res.sendStatus(500);
       }
@@ -27,38 +31,90 @@ export default function UserRoutes(app) {
   app.get("/users/:profileId/profile", async (req, res) => {
     const profileId = req.params.profileId;
     try {
-      const profile = await auth.getProfile(profileId);
-      res.json(profile);
+      const profile = await users.findOne({ _id: profileId });
+      res.json({
+        id: profile._id,
+        username: profile.username,
+        role: profile.role,
+        pfp: profile.pfp,
+      });
     } catch (e) {
       res.sendStatus(404);
     }
   });
 
-  // Follow user by ID
-  app.post("/users/:profileId/follow", async (req, res) => {
+  // Get ratings of user by ID
+  app.get("/users/:profileId/ratings", async (req, res) => {
     const profileId = req.params.profileId;
-    const user = auth.authenticate(req.headers.authorization);
-    if (user) {
-      await follows.findOneAndUpdate(
-        { userId: user.id, follows: profileId },
-        {},
-        { upsert: true }
-      );
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(401);
+    try {
+      const userRatings = await ratings.find({ userId: profileId });
+      res.json(userRatings);
+    } catch (e) {
+      res.sendStatus(404);
     }
   });
 
-  // Unfollow user by ID
-  app.post("/users/:profileId/unfollow", async (req, res) => {
+  // Get followers of user by ID
+  app.get("/users/:profileId/followers", async (req, res) => {
     const profileId = req.params.profileId;
-    const user = auth.authenticate(req.headers.authorization);
-    if (user) {
-      await follows.findOneAndDelete({ userId: user.id, follows: profileId });
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(401);
+    try {
+      const followers = await follows.find({ follows: profileId });
+      const results = await Promise.all(
+        followers.map(async (rel) => {
+          const user = await users.findOne({ _id: rel.userId });
+          return {
+            id: user._id,
+            username: user.username,
+            role: user.role,
+            pfp: user.pfp,
+          };
+        })
+      );
+      res.json(results);
+    } catch (e) {
+      res.sendStatus(404);
+    }
+  });
+
+  // Get following of user by ID
+  app.get("/users/:profileId/following", async (req, res) => {
+    const profileId = req.params.profileId;
+    try {
+      const followers = await follows.find({ userId: profileId });
+      const results = await Promise.all(
+        followers.map(async (rel) => {
+          const user = await users.findOne({ _id: rel.follows });
+          return {
+            id: user._id,
+            username: user.username,
+            role: user.role,
+            pfp: user.pfp,
+          };
+        })
+      );
+      res.json(results);
+    } catch (e) {
+      res.sendStatus(404);
+    }
+  });
+
+  // Get watchlist of user by ID
+  app.get("/users/:profileId/watchlist", async (req, res) => {
+    try {
+      const watchlist = await watchlists.find({ userId });
+      const results = await Promise.all(
+        watchlist.map(async (rel) => {
+          const movie = await api.get(`/movie/${rel.movieId}?language=en-US`);
+          return {
+            id: movie.data.id,
+            title: movie.data.title,
+            poster_path: movie.data.poster_path,
+          };
+        })
+      );
+      res.json(results);
+    } catch (e) {
+      res.sendStatus(404);
     }
   });
 }

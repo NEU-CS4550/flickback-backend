@@ -7,7 +7,7 @@ import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
 import AuthRoutes from "./routes/auth.js";
-import SearchRoutes from "./routes/search.js";
+import ActionRoutes from "./routes/actions.js";
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -27,7 +27,7 @@ AuthRoutes(app);
 GenreRoutes(app);
 MovieRoutes(app);
 UserRoutes(app);
-SearchRoutes(app);
+ActionRoutes(app);
 
 app.listen(port);
 
