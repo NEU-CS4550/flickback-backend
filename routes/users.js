@@ -48,7 +48,9 @@ export default function UserRoutes(app) {
   app.get("/users/:profileId/ratings", async (req, res) => {
     const profileId = req.params.profileId;
     try {
-      const userRatings = await ratings.find({ userId: profileId });
+      const userRatings = await ratings
+        .find({ userId: profileId })
+        .sort({ submitted: -1 });
       res.json(userRatings);
     } catch (e) {
       res.sendStatus(404);

@@ -2,10 +2,11 @@ import { users } from "../database/models.js";
 import { hash, verify } from "@node-rs/argon2";
 import jwt from "jsonwebtoken";
 
-// password must have 6 chars or more
-export const register = async (username, password, role = "USER") => {
+// Password must have 6 chars or more
+// Username must have 3 chars or more
+export const validateSettings = (username, password) => {
   username = username.trim();
-  if (username == "" || password == "") {
+  if (!username || !password) {
     return {
       type: "error",
       message: "Username and password required.",
@@ -19,6 +20,13 @@ export const register = async (username, password, role = "USER") => {
     };
   }
 
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(username)) {
+    return {
+      type: "error",
+      message: "Username must be alphanumeric and begin with a letter.",
+    };
+  }
+
   if (password.length < 6) {
     return {
       type: "error",
@@ -26,11 +34,15 @@ export const register = async (username, password, role = "USER") => {
     };
   }
 
-  if (/\s/.test(username) || /\s/.test(password)) {
-    return {
-      type: "error",
-      message: "Username and password cannot contain any whitespace.",
-    };
+  return 0;
+};
+
+// Register
+export const register = async (username, password, role = "USER") => {
+  username = username.trim();
+  const response = validateSettings(username, password);
+  if (response != 0) {
+    return response;
   }
 
   const exists = await users.exists({
@@ -47,12 +59,13 @@ export const register = async (username, password, role = "USER") => {
     role: role,
   });
 
-  return await {
+  return {
     type: "success",
     token: generateToken(record),
   };
 };
 
+// Login
 export const login = async (username, password) => {
   if (username.trim() == "" || password.trim == "") {
     return {
@@ -77,13 +90,36 @@ export const login = async (username, password) => {
   if (!passwordMatch) {
     return {
       type: "error",
-      message: "Incorrect password. xxxxxxxxxx",
+      message: "Incorrect password.",
     };
   }
 
   return await {
     type: "success",
     token: generateToken(record),
+  };
+};
+
+// Update
+export const update = async (userId, username, password) => {
+  username = username.trim();
+  const response = validateSettings(username, password);
+  if (response != 0) {
+    return response;
+  }
+
+  await users.findOneAndUpdate(
+    {
+      _id: userId,
+    },
+    {
+      username: username,
+      passwordHash: await hash(password),
+    }
+  );
+
+  return {
+    type: "success",
   };
 };
 

@@ -16,4 +16,19 @@ export default function AuthRoutes(app) {
     const response = await auth.login(req.body.username, req.body.password);
     res.json(response);
   });
+
+  // Update account
+  app.put("/auth/update", async (req, res) => {
+    const user = auth.authenticate(req.headers.authorization);
+    if (user) {
+      const response = await auth.update(
+        user.id,
+        req.body.username,
+        req.body.password
+      );
+      res.json(response);
+    } else {
+      res.sendStatus(401);
+    }
+  });
 }
