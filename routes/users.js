@@ -1,4 +1,5 @@
 import * as auth from "../utils/auth.js";
+import { api } from "../utils/api.js";
 import { users, follows, ratings, watchlists } from "../database/models.js";
 
 export default function UserRoutes(app) {
@@ -100,8 +101,9 @@ export default function UserRoutes(app) {
 
   // Get watchlist of user by ID
   app.get("/users/:profileId/watchlist", async (req, res) => {
+    const profileId = req.params.profileId;
     try {
-      const watchlist = await watchlists.find({ userId });
+      const watchlist = await watchlists.find({ userId: profileId });
       const results = await Promise.all(
         watchlist.map(async (rel) => {
           const movie = await api.get(`/movie/${rel.movieId}?language=en-US`);
