@@ -42,7 +42,7 @@ export default function MovieRoutes(app) {
       const response = await api.get(`/movie/${movieId}?language=en-US`);
       res.json(response.data);
     } catch (e) {
-      res.sendStatus(500);
+      res.sendStatus(e.response.status);
     }
   });
 
@@ -96,7 +96,6 @@ export default function MovieRoutes(app) {
         },
         { upsert: true }
       );
-      console.log(req.body);
       res.sendStatus(200);
     } else {
       res.sendStatus(401);
