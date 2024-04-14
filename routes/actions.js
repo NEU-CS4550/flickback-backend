@@ -1,4 +1,4 @@
-import { users, follows, ratings, watchlists } from "../database/models.js";
+import { follows, ratings, watchlists } from "../database/models.js";
 import * as auth from "../utils/auth.js";
 import { api } from "../utils/api.js";
 
@@ -58,7 +58,7 @@ export default function ActionRoutes(app) {
   });
 
   // Remove movie from watchlist
-  app.post("/actions/unwatchlist/:movieId", async (req, res) => {
+  app.delete("/actions/watchlist/:movieId", async (req, res) => {
     const movieId = req.params.movieId;
     const user = auth.authenticate(req.headers.authorization);
     if (user) {

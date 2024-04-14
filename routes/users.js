@@ -5,8 +5,14 @@ import { users, follows, ratings, watchlists } from "../database/models.js";
 export default function UserRoutes(app) {
   // Get list of all users
   app.get("/users", async (req, res) => {
-    const response = await users.find({});
-    res.json(response);
+    const response = await users.find({}, "_id, username role");
+    res.json(
+      response.map((user) => {
+        const formatted = { ...user._doc, id: user._id };
+        delete formatted._id;
+        return formatted;
+      })
+    );
   });
 
   // Get current user
@@ -19,6 +25,7 @@ export default function UserRoutes(app) {
           id: userInfo._id,
           username: userInfo.username,
           pfp: userInfo.pfp,
+          role: userInfo.role,
         });
       } catch (e) {
         res.sendStatus(500);
@@ -75,6 +82,7 @@ export default function UserRoutes(app) {
       );
       res.json(results);
     } catch (e) {
+      console.log(e);
       res.sendStatus(404);
     }
   });

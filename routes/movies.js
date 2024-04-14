@@ -1,6 +1,6 @@
 import { api } from "../utils/api.js";
 import * as auth from "../utils/auth.js";
-import { watchlists, ratings } from "../database/models.js";
+import { ratings } from "../database/models.js";
 
 export default function MovieRoutes(app) {
   // List of movies in theaters now

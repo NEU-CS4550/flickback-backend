@@ -25,11 +25,13 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-UserSchema.pre("remove", (next) => {
-  watchlists.remove({ userId: this._id.toString() }).exec();
-  ratings.remove({ userId: this._id.toString() }).exec();
-  follows.remove({ userId: this._id.toString() }).exec();
-  follows.remove({ follows: this._id.toString() }).exec();
+UserSchema.pre("findOneAndDelete", async function (next) {
+  const userId = this.getQuery()._id.toString();
+  await watchlists.deleteMany({ userId });
+  await ratings.deleteMany({ userId });
+  await follows.deleteMany({ userId });
+  await follows.deleteMany({ follows: userId });
+  next();
 });
 
 const users = new mongoose.model("User", UserSchema);
