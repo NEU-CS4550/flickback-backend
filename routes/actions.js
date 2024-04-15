@@ -4,11 +4,12 @@ import { api } from "../utils/api.js";
 
 export default function ActionRoutes(app) {
   // Search movies by query string
-  app.post("/actions/search", async (req, res) => {
-    const query = req.body.query;
+  app.get("/actions/search", async (req, res) => {
+    const query = req.query.query;
+    const page = req.query.page;
     if (query === "") return res.json([]);
     const response = await api.get(
-      `/search/movie?query=${query}&language=en-US&page=1`
+      `/search/movie?query=${query}&language=en-US&page=${page}`
     );
     res.json(response.data);
   });

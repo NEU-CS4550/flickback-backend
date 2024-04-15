@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import GenreRoutes from "./routes/genres.js";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
 import AuthRoutes from "./routes/auth.js";
@@ -25,7 +24,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 AuthRoutes(app);
-GenreRoutes(app);
 MovieRoutes(app);
 UserRoutes(app);
 ActionRoutes(app);
