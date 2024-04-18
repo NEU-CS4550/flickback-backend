@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema(
     pfp: {
       type: String,
       default: () => {
-        return "/pfps/" + (Math.floor(Math.random() * 4) + 1) + ".png";
+        return "/pfps/" + (Math.floor(Math.random() * 39) + 1) + ".png";
       },
     },
   },
