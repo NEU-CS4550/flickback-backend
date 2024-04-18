@@ -1,6 +1,5 @@
 import "dotenv/config";
 import express from "express";
-import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import MovieRoutes from "./routes/movies.js";
@@ -14,19 +13,10 @@ mongoose.connect(process.env.MONGODB_URI);
 const app = express();
 const port = 4000;
 
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_URL,
-  })
-);
-app.use(express.json());
-app.use(cookieParser());
-
 //cors and preflight filtering
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,OPTIONS,PATCH,DELETE,POST,PUT"
@@ -40,6 +30,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use(express.json());
+app.use(cookieParser());
 
 AuthRoutes(app);
 MovieRoutes(app);
