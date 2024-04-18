@@ -9,7 +9,6 @@ export default function MovieRoutes(app) {
       const response = await api.get(
         "/movie/now_playing?language=en-US&page=1"
       );
-      console.log("movies");
       res.json(response.data);
     } catch (e) {
       res.sendStatus(500);
