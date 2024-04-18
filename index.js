@@ -12,7 +12,6 @@ import AdminRoutes from "./routes/admin.js";
 mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
-const port = 4000;
 
 app.use(
   cors({
@@ -28,7 +27,5 @@ MovieRoutes(app);
 UserRoutes(app);
 ActionRoutes(app);
 AdminRoutes(app);
-
-app.listen(port);
 
 export default app;
