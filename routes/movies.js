@@ -16,9 +16,9 @@ export default function MovieRoutes(app) {
   });
 
   // List of most popular movies
-  app.get("/movies/popular", async (req, res) => {
+  app.get("/movies/top-rated", async (req, res) => {
     try {
-      const response = await api.get("/movie/popular?language=en-US&page=1");
+      const response = await api.get("/movie/top_rated?language=en-US");
       res.json(response.data);
     } catch (e) {
       res.sendStatus(500);
