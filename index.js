@@ -23,6 +23,11 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// respond ok for preflight
+app.options("*", function (req, res) {
+  res.sendStatus(200);
+});
+
 AuthRoutes(app);
 MovieRoutes(app);
 UserRoutes(app);
