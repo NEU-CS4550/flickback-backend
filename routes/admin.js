@@ -1,5 +1,5 @@
-import * as auth from "../utils/auth.js";
 import { users, ratings } from "../database/models.js";
+import * as auth from "../utils/auth.js";
 
 export default function AdminRoutes(app) {
   // Delete a user
