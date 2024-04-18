@@ -24,12 +24,19 @@ app.use(express.json());
 app.use(cookieParser());
 
 //cors and preflight filtering
-app.all("*", function (req, res, next) {
-  res.set(
-    "Access-Control-Allow-Headers",
-    req.headers["access-control-request-headers"]
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
-  if (req.method == "OPTIONS") return res.sendStatus(200);
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Origin"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
