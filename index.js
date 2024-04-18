@@ -29,7 +29,7 @@ app.all("*", function (req, res, next) {
     "Access-Control-Allow-Headers",
     req.headers["access-control-request-headers"]
   );
-  if (req.method == "OPTIONS") return res.sendStatus(204);
+  if (req.method == "OPTIONS") return res.sendStatus(200);
   next();
 });
 
