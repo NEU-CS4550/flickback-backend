@@ -1,5 +1,5 @@
-import { api } from "../utils/api.js";
 import * as auth from "../utils/auth.js";
+import { api } from "../utils/api.js";
 import { ratings } from "../database/models.js";
 
 export default function MovieRoutes(app) {

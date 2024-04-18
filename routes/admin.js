@@ -1,6 +1,5 @@
-import { users, follows, ratings, watchlists } from "../database/models.js";
 import * as auth from "../utils/auth.js";
-import { api } from "../utils/api.js";
+import { users, ratings } from "../database/models.js";
 
 export default function AdminRoutes(app) {
   // Delete a user

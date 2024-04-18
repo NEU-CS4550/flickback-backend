@@ -1,6 +1,6 @@
-import { follows, ratings, watchlists } from "../database/models.js";
 import * as auth from "../utils/auth.js";
 import { api } from "../utils/api.js";
+import { follows, ratings, watchlists } from "../database/models.js";
 
 export default function ActionRoutes(app) {
   // Search movies by query string
