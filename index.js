@@ -23,9 +23,14 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// respond ok for preflight
-app.options("*", function (req, res) {
-  res.sendStatus(200);
+//cors and preflight filtering
+app.all("*", function (req, res, next) {
+  res.set(
+    "Access-Control-Allow-Headers",
+    req.headers["access-control-request-headers"]
+  );
+  if (req.method == "OPTIONS") return res.sendStatus(204);
+  next();
 });
 
 AuthRoutes(app);
