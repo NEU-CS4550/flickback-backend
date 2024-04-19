@@ -1,15 +1,17 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import MovieRoutes from "./routes/movies.js";
 import UserRoutes from "./routes/users.js";
 import AuthRoutes from "./routes/auth.js";
 import ActionRoutes from "./routes/actions.js";
 import AdminRoutes from "./routes/admin.js";
+import connect from "./database/mongoose.js";
 
-mongoose.connect(process.env.MONGODB_URI);
+// connect to db
+// cache connection
+connect();
 
 const app = express();
 const port = 4000;
