@@ -9,19 +9,7 @@ import AuthRoutes from "./routes/auth.js";
 import ActionRoutes from "./routes/actions.js";
 import AdminRoutes from "./routes/admin.js";
 
-let cachedDb = null;
-
-async function connectDb() {
-  if (!cachedDb) {
-    cachedDb = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      maxPoolSize: 10, // Connection pool size
-      socketTimeoutMS: 30000,
-    });
-  }
-  return cachedDb;
-}
+mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 const port = 4000;
@@ -34,11 +22,6 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-
-app.use((req, res, next) => {
-  connectDb();
-  next();
-});
 
 AuthRoutes(app);
 MovieRoutes(app);
