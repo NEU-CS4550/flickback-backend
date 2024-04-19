@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { hash } from "@node-rs/argon2";
 import { follows, ratings, watchlists } from "./models.js";
 
 const UserSchema = new mongoose.Schema(
@@ -24,6 +25,13 @@ const UserSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+UserSchema.pre("save", async function (next) {
+  if (!this.passwordHash) {
+    this.passwordHash = await hash("123456");
+  }
+  next();
+});
 
 UserSchema.pre("findOneAndDelete", async function (next) {
   const userId = this.getQuery()._id.toString();

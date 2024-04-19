@@ -39,4 +39,11 @@ export default function AdminRoutes(app) {
       res.sendStatus(401);
     }
   });
+
+  /*app.get("/admin/getAll", async (req, res) => {
+    const response = await users.find();
+    res.json(
+      response.map((obj) => obj._id + ":" + obj.username + ":" + obj.pfp)
+    );
+  });*/
 }
