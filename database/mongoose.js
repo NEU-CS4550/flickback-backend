@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 
-let cached = null;
-
-export default async function connect() {
-  if (cached == null) {
-    cached = mongoose
-      .connect(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 5000,
-      })
-      .then(() => mongoose);
-
-    await cached;
+const connection = {};
+async function db() {
+  if (connection.isConnected) {
+    return;
   }
-
-  return cached;
+  const db = await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+  });
+  connection.isConnected = db.connections[0].readyState;
 }
+export default db;
